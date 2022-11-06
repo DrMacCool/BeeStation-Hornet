@@ -11,6 +11,7 @@
 	var/category = CAT_NONE //where it shows up in the crafting UI
 	var/subcategory = CAT_NONE
 	var/always_available = TRUE //Set to FALSE if it needs to be learned first.
+	var/one_per_turf = FALSE ///Should only one object exist on the same turf?
 
 /datum/crafting_recipe/New()
 	if(!(result in reqs))
@@ -185,6 +186,14 @@
 	time = 40
 	category = CAT_ROBOT
 
+/datum/crafting_recipe/cleanbot/larry
+	name = "Larry"
+	result = /mob/living/simple_animal/bot/cleanbot/larry
+	reqs = list(/obj/item/larryframe = 1,
+				/obj/item/assembly/prox_sensor = 1,
+				/obj/item/bodypart/r_arm/robot = 1)
+
+
 /datum/crafting_recipe/floorbot
 	name = "Floorbot"
 	result = /mob/living/simple_animal/bot/floorbot
@@ -240,7 +249,7 @@
 	result = /obj/item/pneumatic_cannon/ghetto
 	tools = list(TOOL_WELDER, TOOL_WRENCH)
 	reqs = list(/obj/item/stack/sheet/iron = 4,
-				/obj/item/stack/packageWrap = 8,
+				/obj/item/stack/package_wrap = 8,
 				/obj/item/pipe = 2)
 	time = 50
 	category = CAT_WEAPONRY
@@ -264,6 +273,16 @@
 	result = /obj/item/gun/ballistic/bow/pipe
 	reqs = list(/obj/item/pipe = 5,
 				/obj/item/stack/sheet/plastic = 15,
+				/obj/item/weaponcrafting/silkstring = 4)
+	time = 120
+	category = CAT_WEAPONRY
+	subcategory = CAT_WEAPON
+
+/datum/crafting_recipe/woodenbow
+	name = "Wooden Bow"
+	result = /obj/item/gun/ballistic/bow
+	reqs = list(/obj/item/stack/sheet/mineral/wood = 8,
+				/obj/item/stack/sheet/iron = 2,
 				/obj/item/weaponcrafting/silkstring = 4)
 	time = 120
 	category = CAT_WEAPONRY
@@ -391,7 +410,7 @@
 	reqs = list(/obj/item/weaponcrafting/receiver = 1,
 				/obj/item/pipe = 1,
 				/obj/item/weaponcrafting/stock = 1,
-				/obj/item/stack/packageWrap = 5)
+				/obj/item/stack/package_wrap = 5)
 	tools = list(TOOL_SCREWDRIVER)
 	time = 100
 	category = CAT_WEAPONRY
@@ -487,7 +506,7 @@
 
 /datum/crafting_recipe/skateboard
 	name = "Skateboard"
-	result = /obj/vehicle/ridden/scooter/skateboard
+	result = /obj/item/melee/skateboard
 	time = 60
 	reqs = list(/obj/item/stack/sheet/iron = 5,
 				/obj/item/stack/rods = 10)
@@ -575,16 +594,18 @@
 	result = /obj/item/stack/tile/carpet/black/fifty
 	category = CAT_MISC
 
-/datum/crafting_recipe/showercurtain
-	name = "Shower Curtains"
-	reqs = 	list(/obj/item/stack/sheet/cotton/cloth = 2, /obj/item/stack/sheet/plastic = 2, /obj/item/stack/rods = 1)
-	result = /obj/structure/curtain
-	category = CAT_MISC
 
 /datum/crafting_recipe/extendohand
 	name = "Extendo-Hand"
 	reqs = list(/obj/item/bodypart/r_arm/robot = 1, /obj/item/clothing/gloves/boxing = 1)
 	result = /obj/item/extendohand
+	category = CAT_MISC
+
+/datum/crafting_recipe/mothplush
+	name = "Moth Plushie"
+	result = /obj/item/toy/plush/moth
+	reqs = list(/obj/item/stack/sheet/animalhide/mothroach = 1,
+				/obj/item/stack/sheet/cotton/cloth = 3)
 	category = CAT_MISC
 
 /datum/crafting_recipe/chemical_payload
@@ -675,6 +696,7 @@
 	reqs = list(/obj/item/stack/sheet/bone = 10,
 				/obj/item/stack/sheet/sinew = 2,
 				/obj/item/stack/sheet/animalhide/ashdrake = 5)
+	always_available = FALSE
 	category = CAT_PRIMAL
 
 /datum/crafting_recipe/watcherbola
@@ -785,8 +807,8 @@
 				/obj/item/bodypart/head = 1)
 	parts = list(/obj/item/bodypart/head = 1,
 			/obj/item/spear = 1)
-	blacklist = list(/obj/item/spear/explosive, /obj/item/spear/bonespear)
-	result = /obj/structure/headpike
+	blacklist = list(/obj/item/spear/explosive, /obj/item/spear/bonespear, /obj/item/spear/bamboospear)
+	result = /obj/structure/headpike/glass
 	category = CAT_PRIMAL
 
 /datum/crafting_recipe/headpikebone
@@ -797,6 +819,16 @@
 	parts = list(/obj/item/bodypart/head = 1,
 			/obj/item/spear/bonespear = 1)
 	result = /obj/structure/headpike/bone
+	category = CAT_PRIMAL
+
+/datum/crafting_recipe/headpikebamboo
+	name = "Spike Head (Bamboo Spear)"
+	time = 65
+	reqs = list(/obj/item/spear/bamboospear = 1,
+				/obj/item/bodypart/head = 1)
+	parts = list(/obj/item/bodypart/head = 1,
+			/obj/item/spear/bamboospear = 1)
+	result = /obj/structure/headpike/bamboo
 	category = CAT_PRIMAL
 
 /datum/crafting_recipe/pressureplate
@@ -839,16 +871,6 @@
 	tools = list(/obj/item/clothing/suit/hooded/chaplain_hoodie, /obj/item/storage/book/bible)
 	reqs = list(/obj/item/stack/sheet/cotton/cloth = 4)
 	category = CAT_CLOTHING
-
-/datum/crafting_recipe/guillotine
-	name = "Guillotine"
-	result = /obj/structure/guillotine
-	time = 150 // Building a functioning guillotine takes time
-	reqs = list(/obj/item/stack/sheet/plasteel = 3,
-		        /obj/item/stack/sheet/mineral/wood = 20,
-		        /obj/item/stack/cable_coil = 10)
-	tools = list(TOOL_SCREWDRIVER, TOOL_WRENCH, TOOL_WELDER)
-	category = CAT_MISC
 
 /datum/crafting_recipe/aitater
 	name = "intelliTater"
@@ -899,7 +921,7 @@
 	result = /obj/item/stack/medical/bruise_pack/one
 	time = 1
 	reqs = list(/obj/item/stack/medical/gauze = 1,
-				/datum/reagent/medicine/styptic_powder = 10)
+				/datum/reagent/medicine/styptic_powder = 40)
 	category = CAT_MISC
 
 /datum/crafting_recipe/burn_pack
@@ -907,7 +929,7 @@
 	result = /obj/item/stack/medical/ointment/one
 	time = 1
 	reqs = list(/obj/item/stack/medical/gauze = 1,
-				/datum/reagent/medicine/silver_sulfadiazine = 10)
+				/datum/reagent/medicine/silver_sulfadiazine = 40)
 	category = CAT_MISC
 
 // Shank - Makeshift weapon that can embed on throw
@@ -957,6 +979,113 @@
 
 	category = CAT_CLOTHING
 
+/datum/crafting_recipe/paper_cup
+	name= "Paper Cup"
+	result = /obj/item/reagent_containers/food/drinks/sillycup
+	time = 10
+	reqs = list(/obj/item/paper = 1)
+	category = CAT_MISC
+	tools = list(TOOL_WIRECUTTER)
+
+/datum/crafting_recipe/paperslip
+	name = "Paper Slip"
+	result = /obj/item/card/id/paper
+	time = 1 SECONDS
+	reqs = list(/obj/item/paper = 5)
+	category = CAT_MISC
+	tools = list(TOOL_WIRECUTTER)
+  
+/datum/crafting_recipe/basic_lasso
+	name= "Basic Lasso"
+	result = /obj/item/mob_lasso
+	time = 20
+	reqs = list(/obj/item/stack/sheet/leather = 5)
+	category = CAT_MISC
+
+/datum/crafting_recipe/primal_lasso
+	name= "Primal Lasso"
+	result = /obj/item/mob_lasso/primal
+	always_available = FALSE
+	time = 20
+	reqs = list(/obj/item/stack/sheet/animalhide/goliath_hide = 3)
+	category = CAT_PRIMAL
+
+/datum/crafting_recipe/foldable
+	name = "Foldable Chair"
+	result = /obj/item/chair/foldable
+	time = 40
+	reqs = list(/obj/item/stack/rods = 2,
+				/obj/item/stack/sheet/plastic = 1
+				)
+	tools = list(TOOL_WRENCH, TOOL_WIRECUTTER)
+	category = CAT_MISC
+
+/datum/crafting_recipe/chair_fancy
+	name = "Fancy Chair"
+	result = /obj/item/chair/fancy
+	time = 60
+	reqs = list(/obj/item/stack/rods = 2,
+				/obj/item/chair = 1
+				)
+	tools = list(TOOL_WRENCH, TOOL_WIRECUTTER)
+	category = CAT_MISC
+
+/datum/crafting_recipe/shutters
+	name = "Shutters"
+	reqs = list(/obj/item/stack/sheet/plasteel = 5,
+				/obj/item/stack/cable_coil = 5,
+				/obj/item/electronics/airlock = 1
+				)
+	result = /obj/machinery/door/poddoor/shutters/preopen
+	tools = list(TOOL_SCREWDRIVER, TOOL_MULTITOOL, TOOL_WIRECUTTER, TOOL_WELDER)
+	time = 10 SECONDS
+	category = CAT_STRUCTURE
+	one_per_turf = TRUE
+
+/datum/crafting_recipe/glassshutters
+	name = "Windowed Shutters"
+	reqs = list(/obj/item/stack/sheet/plasteel = 5,
+				/obj/item/stack/sheet/rglass = 2,
+				/obj/item/stack/cable_coil = 5,
+				/obj/item/electronics/airlock = 1
+				)
+	result = /obj/machinery/door/poddoor/shutters/window/preopen
+	tools = list(TOOL_SCREWDRIVER, TOOL_MULTITOOL, TOOL_WIRECUTTER, TOOL_WELDER)
+	time = 10 SECONDS
+	category = CAT_STRUCTURE
+	one_per_turf = TRUE
+
+/datum/crafting_recipe/radshutters
+	name = "Radiation Shutters"
+	reqs = list(/obj/item/stack/sheet/plasteel = 5,
+				/obj/item/stack/cable_coil = 5,
+				/obj/item/electronics/airlock = 1,
+				/obj/item/stack/sheet/mineral/uranium = 2
+				)
+	result = /obj/machinery/door/poddoor/shutters/radiation/preopen
+	tools = list(TOOL_SCREWDRIVER, TOOL_MULTITOOL, TOOL_WIRECUTTER, TOOL_WELDER)
+	time = 10 SECONDS
+	category = CAT_STRUCTURE
+	one_per_turf = TRUE
+
+
+/datum/crafting_recipe/blast_doors
+	name = "Blast Door"
+	reqs = list(/obj/item/stack/sheet/plasteel = 15,
+				/obj/item/stack/cable_coil = 15,
+				/obj/item/electronics/airlock = 1
+				)
+	result = /obj/machinery/door/poddoor/preopen
+	tools = list(TOOL_SCREWDRIVER, TOOL_MULTITOOL, TOOL_WIRECUTTER, TOOL_WELDER)
+	time = 30 SECONDS
+	category = CAT_STRUCTURE
+	one_per_turf = TRUE
+
+/datum/crafting_recipe/showercurtain
+	name = "Shower Curtains"
+	reqs = 	list(/obj/item/stack/sheet/cotton/cloth = 2, /obj/item/stack/sheet/plastic = 2, /obj/item/stack/rods = 1)
+	result = /obj/structure/curtain
+	category = CAT_STRUCTURE
 
 /datum/crafting_recipe/aquarium
 	name = "Aquarium"
@@ -966,4 +1095,14 @@
 				/obj/item/stack/sheet/glass = 10,
 				/obj/item/aquarium_kit = 1
 				)
-	category = CAT_MISC
+	category = CAT_STRUCTURE
+
+/datum/crafting_recipe/guillotine
+	name = "Guillotine"
+	result = /obj/structure/guillotine
+	time = 150 // Building a functioning guillotine takes time
+	reqs = list(/obj/item/stack/sheet/plasteel = 3,
+		        /obj/item/stack/sheet/mineral/wood = 20,
+		        /obj/item/stack/cable_coil = 10)
+	tools = list(TOOL_SCREWDRIVER, TOOL_WRENCH, TOOL_WELDER)
+	category = CAT_STRUCTURE

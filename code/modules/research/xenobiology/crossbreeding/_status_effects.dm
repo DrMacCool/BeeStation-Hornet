@@ -327,15 +327,12 @@
 	duration = 600
 
 /datum/status_effect/timecookie/on_apply()
-	if(ishuman(owner))
-		var/mob/living/carbon/human/H
-		H.physiology.do_after_speed *= 0.95
+	owner.add_actionspeed_modifier(/datum/actionspeed_modifier/timecookie)
 	return ..()
 
 /datum/status_effect/timecookie/on_remove()
-	if(ishuman(owner))
-		var/mob/living/carbon/human/H
-		H.physiology.do_after_speed /= 0.95
+	owner.remove_actionspeed_modifier(/datum/actionspeed_modifier/timecookie)
+	return ..()
 
 /datum/status_effect/lovecookie
 	id = "lovecookie"
@@ -450,7 +447,7 @@
 	if(!linked_extract || !linked_extract.loc) //Sanity checking
 		qdel(src)
 		return
-	if(linked_extract && linked_extract.loc != owner && linked_extract.loc.loc != owner)
+	if(linked_extract.loc != owner && linked_extract.loc.loc != owner)
 		linked_extract.linked_effect = null
 		if(!QDELETED(linked_extract))
 			linked_extract.owner = null

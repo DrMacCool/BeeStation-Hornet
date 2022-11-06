@@ -19,6 +19,10 @@
 	head_icon = 'icons/mob/pai_item_head.dmi'
 	var/network = "ss13"
 	var/obj/machinery/camera/current = null
+	light_system = MOVABLE_LIGHT
+	light_power = 1
+	light_range = 5
+	light_on = FALSE
 
 	var/ram = 100	// Used as currency to purchase different abilities
 	var/list/software = list()
@@ -57,7 +61,7 @@
 	var/obj/item/integrated_signaler/signaler // AI's signaller
 
 	var/obj/item/instrument/piano_synth/internal_instrument
-	var/obj/machinery/newscaster			//pAI Newscaster
+	var/obj/machinery/newscaster/pai/newscaster			//pAI Newscaster
 	var/obj/item/healthanalyzer/hostscan				//pAI healthanalyzer
 
 	var/encryptmod = FALSE
@@ -67,7 +71,7 @@
 	var/can_receive = TRUE
 	var/obj/item/card/id/access_card = null
 	var/chassis = "repairbot"
-	var/list/possible_chassis = list("cat" = TRUE, "mouse" = TRUE, "monkey" = TRUE, "corgi" = FALSE, "fox" = FALSE, "repairbot" = TRUE, "rabbit" = TRUE, "bat" = FALSE, "butterfly" = FALSE, "hawk" = FALSE, "lizard" = FALSE, "duffel" = TRUE, "snake" = FALSE, "spider" = FALSE, "frog" = FALSE, "crow" = TRUE, "mushroom" = FALSE, "corgi_puppy" = FALSE)		//assoc value is whether it can be picked up.
+	var/list/possible_chassis = list("bat" = TRUE, "bee" = TRUE, "butterfly" = TRUE, "carp" = TRUE, "cat" = TRUE, "corgi" = TRUE, "corgi_puppy" = TRUE, "crow" = TRUE, "duffel" = TRUE, "fox" = TRUE, "frog" = TRUE, "hawk" = TRUE, "lizard" = TRUE, "monkey" = TRUE, "mouse" = TRUE, "mushroom" = TRUE, "phantom" = TRUE, "rabbit" = TRUE, "repairbot" = TRUE, "snake" = TRUE, "spider" = TRUE)		//assoc value is whether it can be picked up.
 	var/static/item_head_icon = 'icons/mob/pai_item_head.dmi'
 	var/static/item_lh_icon = 'icons/mob/pai_item_lh.dmi'
 	var/static/item_rh_icon = 'icons/mob/pai_item_rh.dmi'
@@ -83,7 +87,8 @@
 	var/overload_bulletblock = 0	//Why is this a good idea?
 	var/overload_maxhealth = 0
 	var/silent = FALSE
-	var/brightness_power = 5
+	var/atom/movable/screen/ai/modpc/interface_button
+
 
 /mob/living/silicon/pai/can_unbuckle()
 	return FALSE
@@ -101,7 +106,7 @@
 	GLOB.pai_list -= src
 	return ..()
 
-/mob/living/silicon/pai/Initialize()
+/mob/living/silicon/pai/Initialize(mapload)
 	var/obj/item/paicard/P = loc
 	START_PROCESSING(SSfastprocess, src)
 	GLOB.pai_list += src
@@ -112,26 +117,24 @@
 		P.setPersonality(src)
 	forceMove(P)
 	card = P
-	job = "Personal AI"
+	job = JOB_NAME_PAI
 	signaler = new(src)
 	hostscan = new /obj/item/healthanalyzer(src)
 	if(!radio)
 		radio = new /obj/item/radio/headset/silicon/pai(src)
-	newscaster = new /obj/machinery/newscaster(src)
+	newscaster = new /obj/machinery/newscaster/pai(src)
 	if(!aicamera)
 		aicamera = new /obj/item/camera/siliconcam/ai_camera(src)
 		aicamera.flash_enabled = TRUE
 
-	//PDA
-	aiPDA = new/obj/item/pda/ai(src)
-	aiPDA.owner = real_name
-	aiPDA.ownjob = "pAI Messenger"
-	aiPDA.name = real_name + " (" + aiPDA.ownjob + ")"
-
 	. = ..()
+
+	create_modularInterface()
 
 	emittersemicd = TRUE
 	addtimer(CALLBACK(src, .proc/emittercool), 600)
+	return INITIALIZE_HINT_LATELOAD
+
 
 /mob/living/silicon/pai/Life()
 	if(hacking)
@@ -156,6 +159,10 @@
 		D.open()
 		hacking = FALSE
 
+/mob/living/silicon/pai/LateInitialize()
+	. = ..()
+	modularInterface.saved_identification = name
+
 /mob/living/silicon/pai/make_laws()
 	laws = new /datum/ai_laws/pai()
 	return TRUE
@@ -163,7 +170,9 @@
 /mob/living/silicon/pai/Login()
 	..()
 	var/datum/asset/notes_assets = get_asset_datum(/datum/asset/simple/pAI)
-	notes_assets.send(client)
+	mind.assigned_role = JOB_NAME_PAI
+	if(!notes_assets.send(client))
+		return
 	client.perspective = EYE_PERSPECTIVE
 	if(holoform)
 		client.eye = src
@@ -290,6 +299,7 @@
 /mob/living/silicon/pai/process(delta_time)
 	emitterhealth = CLAMP((emitterhealth + (emitterregen * delta_time)), -50, emittermaxhealth)
 
+
 /obj/item/paicard/attackby(obj/item/W, mob/user, params)
 	..()
 	user.set_machine(src)
@@ -301,9 +311,16 @@
 	else
 		to_chat(user, "Encryption Key ports not configured.")
 
-/obj/item/paicard/emag_act(mob/user) // Emag to wipe the master DNA and supplemental directive
-	if(!pai)
-		return
+/mob/living/silicon/pai/can_interact_with(atom/A)
+	if(A == modularInterface)
+		return TRUE
+	return ..()
+
+/obj/item/paicard/should_emag(mob/user)
+	return pai && ..()
+
+/obj/item/paicard/on_emag(mob/user) // Emag to wipe the master DNA and supplemental directive
+	..()
 	to_chat(user, "<span class='notice'>You override [pai]'s directive system, clearing its master string and supplied directive.</span>")
 	to_chat(pai, "<span class='danger'>Warning: System override detected, check directive sub-system for any changes.'</span>")
 	log_game("[key_name(user)] emagged [key_name(pai)], wiping their master DNA and supplemental directive.")

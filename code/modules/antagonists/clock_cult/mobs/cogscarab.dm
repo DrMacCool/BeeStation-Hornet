@@ -27,14 +27,12 @@ GLOBAL_LIST_INIT(cogscarabs, list())
 	initial_language_holder = /datum/language_holder/clockmob
 	discovery_points = 2000
 
-/mob/living/simple_animal/drone/cogscarab/do_after_coefficent() // This gets added to the delay on a do_after, default 1
-	return 0.6
-
 //No you can't go wielding guns like that.
-/mob/living/simple_animal/drone/cogscarab/Initialize()
+/mob/living/simple_animal/drone/cogscarab/Initialize(mapload)
 	. = ..()
 	ADD_TRAIT(src, TRAIT_NOGUNS, "cogscarab")
 	GLOB.cogscarabs += src
+	add_actionspeed_modifier(/datum/actionspeed_modifier/cogscarab)
 
 /mob/living/simple_animal/drone/cogscarab/death(gibbed)
 	GLOB.cogscarabs -= src
@@ -45,6 +43,11 @@ GLOBAL_LIST_INIT(cogscarabs, list())
 		var/turf/T = get_turf(pick(GLOB.servant_spawns))
 		try_warp_servant(src, T, FALSE)
 	. = ..()
+
+/mob/living/simple_animal/drone/cogscarab/force_hit_projectile(obj/item/projectile/projectile)
+	if(isliving(projectile.fired_from) && is_servant_of_ratvar(projectile.fired_from))
+		return FALSE
+	return TRUE
 
 //====Shell====
 

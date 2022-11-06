@@ -1,3 +1,17 @@
+/datum/station_trait/announcement_intern
+	name = "Announcement Intern"
+	trait_type = STATION_TRAIT_NEGATIVE
+	weight = 3
+	show_in_report = TRUE
+	report_message = "Please be nice to him."
+	blacklist = list(/datum/station_trait/announcement_medbot,
+	/datum/station_trait/announcement_baystation
+	)
+
+/datum/station_trait/announcement_intern/New()
+	. = ..()
+	SSstation.announcer = /datum/centcom_announcer/intern
+
 /datum/station_trait/carp_infestation
 	name = "Carp infestation"
 	trait_type = STATION_TRAIT_NEGATIVE
@@ -51,13 +65,34 @@
 /datum/station_trait/hangover/New()
 	. = ..()
 	RegisterSignal(SSdcs, COMSIG_GLOB_JOB_AFTER_SPAWN, .proc/on_job_after_spawn)
+	RegisterSignal(SSmapping, COMSIG_SUBSYSTEM_POST_INITIALIZE, .proc/create_spawners)
+
+/datum/station_trait/hangover/proc/create_spawners()
+	SIGNAL_HANDLER
+
+	INVOKE_ASYNC(src, .proc/pick_turfs_and_spawn)
+	UnregisterSignal(SSmapping, COMSIG_SUBSYSTEM_POST_INITIALIZE)
+
+/datum/station_trait/hangover/proc/pick_turfs_and_spawn()
+	var/list/turf/turfs = get_safe_random_station_turfs(typesof(/area/hallway) | typesof(/area/crew_quarters/bar) | typesof(/area/crew_quarters/dorms), rand(200, 300))
+	for(var/turf/T as() in turfs)
+		new /obj/effect/spawner/hangover_spawn(T)
 
 /datum/station_trait/hangover/proc/on_job_after_spawn(datum/source, datum/job/job, mob/living/living_mob, mob/spawned_mob, joined_late)
 	SIGNAL_HANDLER
 
-	if(joined_late)
+	if(joined_late || !iscarbon(living_mob))
 		return
-	if(prob(35))
+
+	var/mob/living/carbon/spawned_carbon = living_mob
+	spawned_carbon.set_resting(TRUE, silent = TRUE)
+	if(prob(50))
+		spawned_carbon.adjust_drugginess(rand(15, 20))
+	else
+		spawned_carbon.drunkenness += rand(15, 25)
+	spawned_carbon.adjust_disgust(rand(5, 55)) //How hungover are you?
+
+	if(prob(35) && !spawned_carbon.head)
 		var/obj/item/hat = pick(list(/obj/item/clothing/head/sombrero, /obj/item/clothing/head/fedora, /obj/item/clothing/mask/balaclava, /obj/item/clothing/head/ushanka, /obj/item/clothing/head/cardborg, /obj/item/clothing/head/pirate, /obj/item/clothing/head/cone))
 		hat = new hat(spawned_mob)
 		spawned_mob.equip_to_slot(hat, ITEM_SLOT_HEAD)
@@ -91,7 +126,7 @@
 	trait_type = STATION_TRAIT_NEGATIVE
 	weight = 5
 	show_in_report = TRUE
-	var/list/jobs_to_use = list("Clown", "Bartender", "Cook", "Botanist", "Cargo Technician", "Mime", "Janitor")
+	var/list/jobs_to_use = list(JOB_NAME_CLOWN, JOB_NAME_BARTENDER, JOB_NAME_COOK, JOB_NAME_BOTANIST, JOB_NAME_CARGOTECHNICIAN, JOB_NAME_MIME, JOB_NAME_JANITOR)
 	var/chosen_job
 
 /datum/station_trait/overflow_job_bureacracy/New()

@@ -14,7 +14,7 @@
 /datum/hud/proc/create_parallax(mob/viewmob)
 	var/mob/screenmob = viewmob || mymob
 	var/client/C = screenmob.client
-	if (!apply_parallax_pref(viewmob)) //don't want shit computers to crash when specing someone with insane parallax, so use the viewer's pref
+	if (!C || !apply_parallax_pref(viewmob)) //don't want shit computers to crash when specing someone with insane parallax, so use the viewer's pref
 		return
 
 	if(!length(C.parallax_layers_cached))
@@ -167,10 +167,13 @@
 
 		L.transform = newtransform
 
-		animate(L, transform = matrix(), time = T, loop = -1, flags = ANIMATION_END_NOW)
+		animate(L, transform = matrix(), time = T, loop = -1)
+		animate(transform = newtransform, time = 0, loop = -1)
 
 /datum/hud/proc/update_parallax()
 	var/client/C = mymob.client
+	if(!C)
+		return
 	var/turf/posobj = get_turf(C.eye)
 	if(!posobj)
 		return

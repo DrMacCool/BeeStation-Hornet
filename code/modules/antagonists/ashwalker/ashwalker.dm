@@ -10,6 +10,7 @@
 	prevent_roundtype_conversion = FALSE
 	antagpanel_category = "Ash Walkers"
 	delay_roundend = FALSE
+	count_against_dynamic_roll_chance = FALSE
 	var/datum/team/ashwalkers/ashie_team
 
 /datum/antagonist/ashwalker/create_team(datum/team/team)
@@ -30,7 +31,7 @@
 /datum/antagonist/ashwalker/on_gain()
 	. = ..()
 	RegisterSignal(owner.current, COMSIG_MOB_EXAMINATE, .proc/on_examinate)
-	owner.teach_crafting_recipe(/datum/crafting_recipe/skeleton_key)
+	owner.teach_crafting_recipe(/datum/crafting_recipe/skeleton_key, /datum/crafting_recipe/drakecloak)
 
 /datum/antagonist/ashwalker/on_removal()
 	. = ..()

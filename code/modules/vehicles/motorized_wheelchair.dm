@@ -22,7 +22,11 @@
 	for(var/obj/item/stock_parts/capacitor/C in contents)
 		power_efficiency = C.rating
 	var/datum/component/riding/D = GetComponent(/datum/component/riding)
-	D.vehicle_move_delay = round(CONFIG_GET(number/movedelay/run_delay) * delay_multiplier) / speed
+	D.vehicle_move_delay = round(1.5 * delay_multiplier) / speed
+
+
+/obj/vehicle/ridden/wheelchair/motorized/get_cell()
+	return power_cell
 
 /obj/vehicle/ridden/wheelchair/motorized/obj_destruction(damage_flag)
 	var/turf/T = get_turf(src)

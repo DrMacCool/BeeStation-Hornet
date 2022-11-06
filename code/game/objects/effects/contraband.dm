@@ -59,7 +59,7 @@
 	var/poster_item_desc = "This hypothetical poster item should not exist, let's be honest here."
 	var/poster_item_icon_state = "rolled_poster"
 
-/obj/structure/sign/poster/Initialize()
+/obj/structure/sign/poster/Initialize(mapload)
 	. = ..()
 	if(random_basetype)
 		randomise(random_basetype)
@@ -654,12 +654,17 @@
 
 /obj/structure/sign/poster/official/moth9
 	name = "Safety Moth - Delamination Safety Precautions"
-	desc = "This informational poster uses Safety Moth(TM) to tell the viewer to hide in lockers when the Supermatter Crystal has delaminated. Running away might be a better strategy. It's signed by 'AspEv'."
+	desc = "This outdated informational poster uses Safety Moth(TM) to tell the viewer to hide in lockers when the Supermatter Crystal has delaminated. Running away might be a better strategy. It's signed by 'AspEv'."
 	icon_state = "poster44_legit"
 
 /obj/structure/sign/poster/contraband/syndiemoth
 	name = "Syndie Moth - Nuclear Operation"
 	desc = "A Syndicate-commissioned poster that uses Syndie Moth(TM?) to tell the viewer to keep the nuclear authentication disk unsecured. No, we aren't doing that. It's signed by 'AspEv'."
 	icon_state = "poster49"
+
+/obj/structure/sign/poster/official/suit_sensors
+	name = "Turn on your suit sensors"
+	desc = "A poster begging you to turn on your suit sensors. Otherwise, you may be harder to locate if you sustain damage."
+	icon_state = "poster50"
 
 #undef PLACE_SPEED

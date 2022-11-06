@@ -9,7 +9,7 @@
 	var/obj/item/tank/attached_tank = null
 	var/mask_out = FALSE
 
-/obj/machinery/anesthetic_machine/Initialize()
+/obj/machinery/anesthetic_machine/Initialize(mapload)
 	. = ..()
 	attached_mask = new /obj/item/clothing/mask/breath/machine(src)
 	attached_mask.machine_attached = src
@@ -43,6 +43,8 @@
 
 /obj/machinery/anesthetic_machine/AltClick(mob/user)
 	. = ..()
+	if(!user.canUseTopic(src, BE_CLOSE))
+		return
 	if(attached_tank)// If attached tank, remove it.
 		attached_tank.forceMove(loc)
 		to_chat(user, "<span class='notice'>You remove the [attached_tank].</span>")
@@ -98,7 +100,7 @@
 /obj/machinery/anesthetic_machine/Destroy()
 	if(mask_out)
 		retract_mask()
-	qdel(attached_mask)
+	QDEL_NULL(attached_mask)
 	new /obj/item/clothing/mask/breath(src)
 	. = ..()
 
@@ -106,12 +108,16 @@
 	var/obj/machinery/anesthetic_machine/machine_attached
 	clothing_flags = MASKINTERNALS | MASKEXTENDRANGE
 
-/obj/item/clothing/mask/breath/machine/Initialize()
+/obj/item/clothing/mask/breath/machine/Initialize(mapload)
 	. = ..()
 	ADD_TRAIT(src, TRAIT_NODROP, ABSTRACT_ITEM_TRAIT)
 
+/obj/item/clothing/mask/breath/machine/Destroy()
+	machine_attached = null
+	return ..()
+
 /obj/item/clothing/mask/breath/machine/dropped(mob/user)
-	. = ..()
+	..()
 	if(loc != machine_attached) // If not already in machine, go back in when dropped (dropped is called on unequip)
 		to_chat(user, "<span class='notice'>The mask snaps back into the [machine_attached].</span>")
 		machine_attached.retract_mask()

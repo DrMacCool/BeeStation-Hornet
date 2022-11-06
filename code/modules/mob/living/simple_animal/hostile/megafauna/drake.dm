@@ -45,15 +45,15 @@ Difficulty: Medium
 	move_to_delay = 5
 	ranged = TRUE
 	pixel_x = -16
-	crusher_loot = list(/obj/structure/closet/crate/necropolis/dragon, /obj/item/crusher_trophy/tail_spike)
-	loot = list(/obj/structure/closet/crate/necropolis/dragon)
-	butcher_results = list(/obj/item/stack/ore/diamond = 5, /obj/item/stack/sheet/sinew = 5, /obj/item/stack/sheet/bone = 30)
-	guaranteed_butcher_results = list(/obj/item/stack/sheet/animalhide/ashdrake = 10)
+	loot = list(/obj/effect/spawner/lootdrop/megafaunaore, /obj/structure/closet/crate/necropolis/dragon)
+	butcher_results = list(/obj/item/stack/ore/diamond = 5, /obj/item/stack/sheet/sinew = 5, /obj/item/stack/sheet/bone = 30) 
+	guaranteed_butcher_results = list(/obj/item/stack/sheet/animalhide/ashdrake = 10)									  
 	var/swooping = NONE
 	var/player_cooldown = 0
 	gps_name = "Fiery Signal"
-	medal_type = BOSS_MEDAL_DRAKE
-	score_type = DRAKE_SCORE
+	achievement_type = /datum/award/achievement/boss/drake_kill
+	crusher_achievement_type = /datum/award/achievement/boss/drake_crusher
+	score_achievement_type = /datum/award/score/drake_score
 	deathmessage = "collapses into a pile of bones, its flesh sloughing away."
 	deathsound = 'sound/magic/demon_dies.ogg'
 	do_footstep = TRUE
@@ -521,7 +521,7 @@ Difficulty: Medium
 	duration = 9
 	pixel_z = 270
 
-/obj/effect/temp_visual/fireball/Initialize()
+/obj/effect/temp_visual/fireball/Initialize(mapload)
 	. = ..()
 	animate(src, pixel_z = 0, time = duration)
 
@@ -570,7 +570,6 @@ Difficulty: Medium
 	mouse_opacity = MOUSE_OPACITY_ICON
 	damage_coeff = list(BRUTE = 1, BURN = 1, TOX = 1, CLONE = 1, STAMINA = 0, OXY = 1)
 	loot = list()
-	crusher_loot = list()
 	butcher_results = list(/obj/item/stack/ore/diamond = 5, /obj/item/stack/sheet/sinew = 5, /obj/item/stack/sheet/bone = 30)
 	attack_action_types = list()
 
@@ -602,7 +601,6 @@ Difficulty: Medium
 	speed = 0
 	mouse_opacity = MOUSE_OPACITY_ICON
 	loot = list()
-	crusher_loot = list()
 	butcher_results = list(/obj/item/stack/ore/diamond = 5, /obj/item/stack/sheet/sinew = 5, /obj/item/stack/sheet/bone = 30)
 	move_force = MOVE_FORCE_NORMAL
 	move_resist = MOVE_FORCE_NORMAL
@@ -614,7 +612,7 @@ Difficulty: Medium
 /mob/living/simple_animal/hostile/megafauna/dragon/space_dragon/grant_achievement(medaltype,scoretype)
 	return
 
-/mob/living/simple_animal/hostile/megafauna/dragon/space_dragon/Initialize()
+/mob/living/simple_animal/hostile/megafauna/dragon/space_dragon/Initialize(mapload)
 	var/obj/effect/proc_holder/spell/aoe_turf/repulse/spacedragon/repulse_action = new /obj/effect/proc_holder/spell/aoe_turf/repulse/spacedragon(src)
 	repulse_action.action.Grant(src)
 	mob_spell_list += repulse_action

@@ -52,7 +52,7 @@
 	var/vomitTimeBonus = 0
 	var/datum/action/cooldown/vomit/goosevomit
 
-/mob/living/simple_animal/hostile/retaliate/goose/vomit/Initialize()
+/mob/living/simple_animal/hostile/retaliate/goose/vomit/Initialize(mapload)
 	. = ..()
 	goosevomit = new
 	goosevomit.Grant(src)
@@ -164,15 +164,12 @@
 	 "down" = CALLBACK(GLOBAL_PROC, .proc/_step, src, SOUTH),
 	 "left" = CALLBACK(GLOBAL_PROC, .proc/_step, src, WEST),
 	 "right" = CALLBACK(GLOBAL_PROC, .proc/_step, src, EAST),
-	 "vomit" = CALLBACK(src, .proc/vomit_prestart, 25)), 12 SECONDS, 4 SECONDS)
+	 "vomit" = CALLBACK(src, .proc/vomit_prestart, 25)), 20)
 
 /mob/living/simple_animal/hostile/retaliate/goose/vomit/proc/eat()
-	var/turf/currentTurf = get_turf(src)
-	while (currentTurf == get_turf(src))
-		var/obj/item/reagent_containers/food/tasty = locate() in currentTurf
-		if (tasty)
-			feed(tasty)
-		stoplag(2)
+	var/obj/item/reagent_containers/food/tasty = locate() in get_turf(src)
+	if (tasty)
+		feed(tasty)
 
 /datum/action/cooldown/vomit
 	name = "Vomit"

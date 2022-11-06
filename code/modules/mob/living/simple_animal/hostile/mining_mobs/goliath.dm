@@ -19,7 +19,6 @@
 	speed = 3
 	maxHealth = 300
 	health = 300
-	harm_intent_damage = 0
 	obj_damage = 100
 	melee_damage = 25
 	attacktext = "pulverizes"
@@ -99,7 +98,7 @@
 	stat_attack = UNCONSCIOUS
 	robust_searching = 1
 
-/mob/living/simple_animal/hostile/asteroid/goliath/beast/random/Initialize()
+/mob/living/simple_animal/hostile/asteroid/goliath/beast/random/Initialize(mapload)
 	. = ..()
 	if(prob(1))
 		new /mob/living/simple_animal/hostile/asteroid/goliath/beast/ancient(loc)

@@ -27,7 +27,7 @@
 	if(petcount <= 0)
 		return TRUE
 	else
-		return FALSE
+		return ..()
 
 /datum/objective/crew/points //ported from old hippie
 	explanation_text = "Make sure the station has at least (Something broke, yell on GitHub) station credits at the end of the shift."
@@ -43,10 +43,11 @@
 	explanation_text = "Make sure the station has at least [target_amount] station credits at the end of the shift."
 
 /datum/objective/crew/points/check_completion()
-	if(SSshuttle.points >= target_amount)
+	var/datum/bank_account/C = SSeconomy.get_dep_account(ACCOUNT_CAR)
+	if(C.account_balance >= target_amount)
 		return TRUE
 	else
-		return FALSE
+		return ..()
 
 /datum/objective/crew/bubblegum
 	explanation_text = "Ensure Bubblegum is dead at the end of the shift."
@@ -55,7 +56,7 @@
 /datum/objective/crew/bubblegum/check_completion()
 	for(var/mob/living/simple_animal/hostile/megafauna/bubblegum/B in GLOB.mob_list)
 		if(!(B.stat == DEAD))
-			return FALSE
+			return ..()
 	return TRUE
 
 /datum/objective/crew/fatstacks //ported from old hippie
@@ -78,4 +79,4 @@
 		if(istype(theID))
 			if(theID.mining_points >= target_amount)
 				return TRUE
-	return FALSE
+	return ..()
